@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <header class="ham bg-primary" style="height: 50px">
       <div class="d-flex justify-content-between pt-1 px-2">
         <div class="px-1 py-2">
@@ -16,11 +16,11 @@
             href="#"
             class="burger-btn d-block d-xl-none text-white position-relative mx-4"
             @click="goBack"
-            ><img
-              src="../assets\images\back.png  "
-              class="position-absolute top-0 bottom-0"
-              style="width: 50px; height: 50px; left: -15px"
-            />
+          ><img
+            src="../assets\images\back.png  "
+            class="position-absolute top-0 bottom-0"
+            style="width: 50px; height: 50px; left: -15px"
+          />
           </a>
         </div>
       </div>
@@ -127,12 +127,12 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import { ref } from "vue";
+import {ref} from "vue";
 import Component1 from "~/pages/componenet/CustomerInformation.vue";
 import Component2 from "~/pages/componenet/CompletionInformation.vue";
 import Component3 from "~/pages/componenet/FinalRegistration.vue";
-import Component4 from "~/pages/componenet/MapPage.vue";
-import { ApplicationStatus } from "~/store/ApplicationStatus"
+
+import {ApplicationStatus} from "~/store/ApplicationStatus"
 import {BaseUrl} from "~/store/BaseApi"
 
 
@@ -146,8 +146,8 @@ const sucssecsend = ref(false);
 const target = route.currentRoute._value.query.cardName;
 const number = route.currentRoute._value.query.loanEconomicTypeId;
 let customerName = "";
-const requestStatus= ApplicationStatus()
-const IsHaserequestModal=ref(false)
+const requestStatus = ApplicationStatus()
+const IsHaserequestModal = ref(false)
 let customer = "";
 const isLoading = ref(false);
 let isBack = ref(false);
@@ -156,7 +156,7 @@ const dataform = ref();
 const modalPlanSurvey = ref(false);
 const router = useRouter();
 let key = "";
-const Url=BaseUrl
+const Url = BaseUrl
 const closePlanSurvey = ref(false);
 const targetObject = dataArray.find((item) => item.id === Number(target));
 if (targetObject) {
@@ -197,6 +197,7 @@ const submittedData = ref({
     surveyDate: null,
     userId: null,
     guidList: [],
+    IsOfflline: 0,
   },
 });
 const isModalVisible = ref(false);
@@ -272,8 +273,8 @@ const showComponent = async (id, data) => {
         LivestockInsurance: data.value.LivestockInsurance,
         InsuranceDate: data.value.InsuranceDate,
         NumberOfInsuredLivestock: data.value.NumberOfInsuredLivestock,
-        LivestockTypeId:  data.value.LivestockTypeId ,
-        NumberOfMaleLivestock:  data.value.NumberOfMaleLivestock ,
+        LivestockTypeId: data.value.LivestockTypeId,
+        NumberOfMaleLivestock: data.value.NumberOfMaleLivestock,
         NumberOfFemaleLivestock: data.value.NumberOfFemaleLivestock,
         livestockTypes: data.value.livestockType,
       };
@@ -325,14 +326,13 @@ const showComponent = async (id, data) => {
     const userDataString = JSON.stringify(body);
 
     const SupervisoryInfo = localStorage.getItem("SupervisoryInfo");
-    const supervisoryInfo =JSON.parse(SupervisoryInfo)
+    const supervisoryInfo = JSON.parse(SupervisoryInfo)
     try {
 
 
-
-      if(requestStatus.isHaserequest==false){
+      if (requestStatus.isHaserequest == false) {
         isLoading.value = true;
-        const config = { headers: { Authorization: "Bearer " + supervisoryInfo.token } };
+        const config = {headers: {Authorization: "Bearer " + supervisoryInfo.token}};
         const response = await axios
           .post(
              `${Url + "api/survey/SetLoanPlanSurvey"}`,
@@ -364,11 +364,11 @@ const showComponent = async (id, data) => {
             }
           });
         isLoading.value = false;
-      }else{
-        IsHaserequestModal.value=true
-        setTimeout(()=>{
-          IsHaserequestModal.value=false
-        },1500)
+      } else {
+        IsHaserequestModal.value = true
+        setTimeout(() => {
+          IsHaserequestModal.value = false
+        }, 1500)
       }
 
 

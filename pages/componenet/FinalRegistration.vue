@@ -574,7 +574,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { BTabs } from "bootstrap-vue-next";
 import { ApplicationStatus } from "~/store/ApplicationStatus"
 import {BaseUrl} from "~/store/BaseApi"
-
+import axios from "axios";
 
 const router = useRouter();
 const currentTab = ref(1);
@@ -582,7 +582,7 @@ const Tab = ref();
 const Url=BaseUrl
 const requestStatus= ApplicationStatus()
 
-import axios from "axios";
+
 
 const props = defineProps({
   isBack: {

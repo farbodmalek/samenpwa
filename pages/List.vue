@@ -217,14 +217,16 @@
 
 </template>
 <script lang="ts" setup>
-
+import {loadingStore} from "../store/loading-store";
 import axios from "axios";
 import {BaseUrl} from "~/store/BaseApi"
+
 
 const Data = ref();
 const photocondition = ref()
 const searchQuery = ref('');
 const searchError = ref()
+const loadingMethod = loadingStore();
 const router = useRouter();
 const SupervisoryInfo = localStorage.getItem("SupervisoryInfo");
 const supervisoryInfo =SupervisoryInfo ?JSON.parse(SupervisoryInfo):{}
@@ -235,8 +237,6 @@ const getphotofromdatabase = ref(false)
 const showsend = ref([]);
 const sucssec = ref(false)
 const Url=BaseUrl
-
-
 const UpdateModal = ref(localStorage.getItem('updatemodal') ? localStorage.getItem('updatemodal') : true)
 const CloseUpdateModalButton = () => {
   localStorage.setItem('updatemodal', false)
@@ -374,11 +374,7 @@ const SendToServer = (item) => {
       console.error("Error sending image data to the backend:", error);
     });
   };
-
-
   const sendDataToBackend = async (body, currentUserId,) => {
-    const token = localStorage.getItem("localStorageTokenKey");
-    console.log(Body )
     try {
       const response = await axios.post(
         `${Url + 'api/survey/SetLoanPlanSurvey'}`, body, {
@@ -389,7 +385,6 @@ const SendToServer = (item) => {
 
       if (response.status == 200) {
         const keyToDelete = `user_${currentUserId}_example_user`;
-
         localStorage.removeItem(keyToDelete);
         sucssec.value = true
         removeFileFromDB(currentUserId)
@@ -408,7 +403,9 @@ const SendToServer = (item) => {
 
 watchEffect(() => {
   const config = {headers: {Authorization: "Bearer " + supervisoryInfo.token}};
-  isLoading.value = true  ;
+
+    loadingMethod.getLoadingShow();
+
   axios
     .post(
       `${Url + "api/survey/GetCartables"}`,
@@ -443,10 +440,12 @@ watchEffect(() => {
       } else {
         condition.value = true
       }
-      isLoading.value = false;
+
+      loadingMethod.getLoadingHide();
     })
     .catch((err) => {
-      isLoading.value = false
+
+      loadingMethod.getLoadingHide();
       const items = localStorage.getItem("GetCartables");
       const data = JSON.parse(items)
       if (data && data.length > 0) {
@@ -492,9 +491,7 @@ watchEffect(() => {
       config
     )
     .then((res) => {
-
       localStorage.setItem("GetSurveysList", JSON.stringify(res.data.results));
-
     })
 
 
@@ -509,18 +506,19 @@ const getItemClass = (item: number) => {
 watch(searchQuery, (newVal, oldVal) => {
   const items = localStorage.getItem("GetCartables");
   const data = JSON.parse(items);
-  const filteredData = data.filter((item) => item.cartableStatusTypeId == 1);
+
   const currentDate = new Date();
   const todayDateString = currentDate.toISOString().split('T')[0]
-  const filteredExpireDate = filteredData.filter(item => item.expireDate.substring(0, 10) >= todayDateString);
+  const filteredExpireDate = data.filter(item => item.expireDate.substring(0, 10) >= todayDateString);
   searchError.value = false
 
   if (newVal) {
+    console.log(filteredExpireDate)
     const foundData = filteredExpireDate.filter((item) => {
 
       return (
         item.loanDetail.customerName.toString().includes(newVal) ||
-        item.loanDetail.customerNumber.toString().includes(newVal)
+        item.loanDetail.loanNumber.toString().includes(newVal)
       );
     });
     Data.value = foundData;
@@ -531,10 +529,9 @@ watch(searchQuery, (newVal, oldVal) => {
     }
   } else {
     searchError.value = false
-    const filteredData = data.filter((item) => item.cartableStatusTypeId == 1);
     const currentDate = new Date();
     const todayDateString = currentDate.toISOString().split('T')[0]
-    const filteredExpireDate = filteredData.filter(item => item.expireDate.substring(0, 10) >= todayDateString);
+    const filteredExpireDate = data.filter(item => item.expireDate.substring(0, 10) >= todayDateString);
     Data.value = filteredExpireDate;
   }
 });
@@ -611,10 +608,6 @@ const modalexite = () => {
 }
 
 
-window.addEventListener('online', async () => {
-  // sendphotoRequest()
-  // location.reload()
-});
 
 
 </script>
@@ -628,28 +621,8 @@ window.addEventListener('online', async () => {
   border-radius: 0px 50px 0px 0px;
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
 
-.spinner-container {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #0000004d;
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); */
-}
+
 
 .background-card {
   background-color: #e5e5e5 !important;

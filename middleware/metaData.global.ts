@@ -1,4 +1,3 @@
-import axios from "axios";
 
 export default defineNuxtRouteMiddleware((to, from) => {
   const SupervisoryInfo = localStorage.getItem("SupervisoryInfo");
@@ -29,11 +28,12 @@ const token =supervisoryInfo.token
     const tomorrowDateString = iranDateTimeFormat.format(tomorrow);
     const  DateTimeString=localStorage.getItem("ArrivalTime")
 
+  console.log(iranDateTimeString,DateTimeString)
   if (DateTimeString){
 
-    if (DateTimeString == tomorrowDateString.substring(0,9)) {
-
-
+    if (DateTimeString == iranDateTimeString.substring(0,9)) {
+      console.log("auth is okey")
+    }else{
       localStorage.removeItem("SurveyBaseInfo");
       localStorage.removeItem("SupervisoryInfo");
       localStorage.removeItem("GetSurveysList")
